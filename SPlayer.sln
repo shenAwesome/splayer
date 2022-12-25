@@ -1,9 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.4.33205.214
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.33130.400
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SPlayer", "SPlayer.csproj", "{20238C0B-020F-4BAD-AEDC-8861A8BF8C1B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SPlayer", ".\Player\SPlayer.csproj", "{20238C0B-020F-4BAD-AEDC-8861A8BF8C1B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", ".\Test\Test.csproj", "{584620B8-8E26-4351-9FF1-D03B86A1EB48}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SForm", ".\SForm\SForm.csproj", "{BD9343C1-2502-44CE-AA21-C98D2DD6000F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +19,14 @@ Global
 		{20238C0B-020F-4BAD-AEDC-8861A8BF8C1B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{20238C0B-020F-4BAD-AEDC-8861A8BF8C1B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{20238C0B-020F-4BAD-AEDC-8861A8BF8C1B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{584620B8-8E26-4351-9FF1-D03B86A1EB48}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{584620B8-8E26-4351-9FF1-D03B86A1EB48}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{584620B8-8E26-4351-9FF1-D03B86A1EB48}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{584620B8-8E26-4351-9FF1-D03B86A1EB48}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BD9343C1-2502-44CE-AA21-C98D2DD6000F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD9343C1-2502-44CE-AA21-C98D2DD6000F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BD9343C1-2502-44CE-AA21-C98D2DD6000F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BD9343C1-2502-44CE-AA21-C98D2DD6000F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
