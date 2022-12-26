@@ -22,6 +22,5 @@ namespace SForm {
             var drawBrush = new SolidBrush(SkinManager.ColorScheme.TextColor);
             g.DrawString(Text, drawFont, drawBrush, 5, 5);
         }
-
     }
 }

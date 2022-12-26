@@ -6,9 +6,12 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 
+//https://github.com/justcoding121/windows-user-action-hook
+
 namespace SPlayer {
 
-    internal class SPlayer {
+
+    public class SPlayer {
 
         public List<Line> Subtitles;
         public long Duration = 0;
@@ -26,14 +29,26 @@ namespace SPlayer {
         }
 
         public void Reload() {
-            this.Open(lastMedia);
+            player.Position = 0;
+            player.SetPause(false);
         }
 
+        private VideoView view;
         public void Install(VideoView view) {
             view.MediaPlayer = player;
+            this.view = view;
         }
 
+        public int VideoWidth = 0;
+        public int VideoHeight = 0;
+
+        private string _runningMedia = null;
+
+        //only trigger by open (when media changes)
         private void Player_Playing(object sender, EventArgs e) {
+            if (_runningMedia == lastMedia) return;
+
+            _runningMedia = lastMedia;
             var media = player.Media;
             foreach (var track in media.Tracks) {
                 switch (track.TrackType) {
@@ -48,6 +63,8 @@ namespace SPlayer {
                         Debug.WriteLine($"{nameof(track.Data.Video.FrameRateDen)}: {track.Data.Video.FrameRateDen}");
                         Debug.WriteLine($"{nameof(track.Data.Video.Height)}: {track.Data.Video.Height}");
                         Debug.WriteLine($"{nameof(track.Data.Video.Width)}: {track.Data.Video.Width}");
+                        VideoWidth = Convert.ToInt32(track.Data.Video.Width);
+                        VideoHeight = Convert.ToInt32(track.Data.Video.Height);
                         break;
                     case TrackType.Text:
                         //Debug.WriteLine("Subtitle");
@@ -58,6 +75,7 @@ namespace SPlayer {
             player.SetSpu(-1);
             player.Volume = 100;
             Duration = media.Duration / 1000;
+            OnOpened?.Invoke(this, null);
         }
 
         public long Progress {
@@ -98,15 +116,31 @@ namespace SPlayer {
         }
 
         private string lastMedia;
+        public event EventHandler<EventArgs> OnOpened;
 
         public void Open(string path) {
+            Duration = 0;
             var media = new Media(LibVLC, new Uri(path));
             player.Play(media);
             media.Dispose();
-            var srtFile = Path.GetDirectoryName(path) + "\\"
-                + Path.GetFileNameWithoutExtension(path) + ".srt";
+            var dir = Path.GetDirectoryName(path);
+            var name = Path.GetFileNameWithoutExtension(path) + ".srt";
+            var srtFile = new List<string> {
+                Path.Combine(dir,name),
+                Path.Combine(dir,"srt",name),
+            }.Find(p => {
+                return File.Exists(p);
+            });
             Subtitles = Line.ParseSrt(srtFile);
-            this.lastMedia = path;
+            lastMedia = path;
+        }
+
+        public void SetStretch(bool stretch) {
+            if (stretch && view != null) {
+                player.AspectRatio = string.Format("{0}:{1}", view.Size.Width, view.Size.Height);
+            } else {
+                player.AspectRatio = null;
+            }
         }
 
         public Line Subtitle {
@@ -124,7 +158,7 @@ namespace SPlayer {
     }
 
 
-    class Line {
+    public class Line {
         public int Index;
         public TimeSpan Start;
         public TimeSpan End;
