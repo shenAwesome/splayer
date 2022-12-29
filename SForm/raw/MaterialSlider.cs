@@ -23,10 +23,10 @@ namespace SForm {
         private Rectangle _valueRectangle;
         private Rectangle _sliderRectangle;
 
-        private const int _activeTrack = 4;
-        private const int _inactiveTrack = 4;
-        private int _thumbRadius = 10;
-        private int _thumbRadiusHoverPressed = 30;
+        protected int _activeTrack = 6;
+        protected int _inactiveTrack = 4;
+        protected int _thumbRadius = 20;
+        protected int _thumbRadiusHoverPressed = 40;
 
         #endregion
 
@@ -325,7 +325,7 @@ namespace SForm {
 
             var drawFont = SkinManager.getFontByType(MaterialSkinManager.fontType.Caption);
             var drawBrush = SkinManager.TextHighEmphasisBrush;
-            g.DrawString(Text, drawFont, drawBrush, _thumbRadiusHoverPressed/2, Height / 2 - drawFont.Size - 5);
+            g.DrawString(Text, drawFont, drawBrush, _thumbRadiusHoverPressed / 2, Height / 2 - drawFont.Size - 5);
 
             Color _inactiveTrackColor;
             Color _accentColor;

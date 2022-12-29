@@ -10,10 +10,17 @@ namespace SPlayer {
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main() {
+        static void Main(string[] args) {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+
+            var form = new Form1();
+            if (args.Length == 1) {
+                var Settings = Properties.Settings.Default;
+                Settings.MediaPath = args[0];
+                Settings.MediaProgress = 0;
+            }
+            Application.Run(form);
         }
     }
 }

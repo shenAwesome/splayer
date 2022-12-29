@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Threading;
 
 //https://github.com/justcoding121/windows-user-action-hook
 
@@ -13,7 +14,7 @@ namespace SPlayer {
 
     public class SPlayer {
 
-        public List<Line> Subtitles;
+        public List<Line> Subtitles = new List<Line>();
         public long Duration = 0;
 
         readonly LibVLC LibVLC = new LibVLC();
@@ -26,12 +27,21 @@ namespace SPlayer {
         public SPlayer() {
             player = new MediaPlayer(LibVLC);
             player.Playing += Player_Playing;
+            player.EndReached += Player_EndReached;
         }
 
         public void Reload() {
-            player.Position = 0;
-            player.SetPause(false);
+            _runningMedia = "";
+            Run(() => Open(MediaPath));
         }
+
+        /** isplaying with 1.5 sec delay**/
+        public bool IsPlaying {
+            get {
+                return this.player.IsPlaying && (now - _playingStart) > 1500;
+            }
+        }
+
 
         private VideoView view;
         public void Install(VideoView view) {
@@ -45,10 +55,12 @@ namespace SPlayer {
         private string _runningMedia = null;
 
         //only trigger by open (when media changes)
+        long _playingStart = 0;
         private void Player_Playing(object sender, EventArgs e) {
-            if (_runningMedia == lastMedia) return;
+            _playingStart = now;
+            if (_runningMedia == MediaPath) return;
 
-            _runningMedia = lastMedia;
+            _runningMedia = MediaPath;
             var media = player.Media;
             foreach (var track in media.Tracks) {
                 switch (track.TrackType) {
@@ -78,13 +90,19 @@ namespace SPlayer {
             OnOpened?.Invoke(this, null);
         }
 
+        private void Player_EndReached(object sender, EventArgs e) {
+            Run(() => {
+                player.Stop();
+                player.Play();
+            });
+        }
+
         public long Progress {
             get {
                 return Convert.ToInt64(GetCurrentTime());
             }
 
             set {
-                Debug.WriteLine(value);
                 player.Time = value * 1000;
             }
         }
@@ -104,22 +122,36 @@ namespace SPlayer {
 
         public string Name {
             get {
-                if (lastMedia == null) return null;
-                return Path.GetFileNameWithoutExtension(lastMedia);
+                if (MediaPath == null) return null;
+                return Path.GetFileNameWithoutExtension(MediaPath);
             }
         }
 
         public bool IsLoaded {
             get {
-                return lastMedia != null;
+                return MediaPath != null;
             }
         }
 
-        private string lastMedia;
+        public string MediaPath;
+        public bool HasSubtitles {
+            get {
+                return Subtitles.Count > 0;
+            }
+        }
+
+
         public event EventHandler<EventArgs> OnOpened;
 
         public void Open(string path) {
+            Open(path, -1);
+        }
+
+        public void Open(string path, long progress) {
+            if (!File.Exists(path)) return;
+
             Duration = 0;
+            _runningMedia = "";
             var media = new Media(LibVLC, new Uri(path));
             player.Play(media);
             media.Dispose();
@@ -132,7 +164,17 @@ namespace SPlayer {
                 return File.Exists(p);
             });
             Subtitles = Line.ParseSrt(srtFile);
-            lastMedia = path;
+            MediaPath = path;
+
+            if (progress > 0) {
+                Run(() => {
+                    Progress = progress;
+                });
+            }
+        }
+
+        public void Run(Action action) {
+            new Thread(new ThreadStart(action)).Start();
         }
 
         public void SetStretch(bool stretch) {
@@ -153,6 +195,12 @@ namespace SPlayer {
         public string SubtitleText {
             get {
                 return Subtitle?.Text;
+            }
+        }
+
+        private long now {
+            get {
+                return DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
             }
         }
     }

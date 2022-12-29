@@ -153,6 +153,16 @@ namespace SPlayer.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap replay_line {
+            get {
+                object obj = ResourceManager.GetObject("replay_line", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap skip_next {
             get {
                 object obj = ResourceManager.GetObject("skip_next", resourceCulture);

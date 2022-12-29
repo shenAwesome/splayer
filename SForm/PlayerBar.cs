@@ -5,6 +5,7 @@ namespace SForm {
 
 
     public class PlayerBar : MaterialSlider {
+
         long _duration;
 
         public long Duration {
@@ -13,7 +14,7 @@ namespace SForm {
             }
             set {
                 _duration = value;
-                CalculateText();
+                Progress = Progress;
             }
         }
 
@@ -38,6 +39,9 @@ namespace SForm {
             this.ShowText = false;
             this.ShowValue = false;
             this.onValueChanged += PlayerBar_onValueChanged;
+
+            this._thumbRadius = 10;
+            this._thumbRadiusHoverPressed = 30;
         }
 
         private void PlayerBar_onValueChanged(object sender, int newValue) {
