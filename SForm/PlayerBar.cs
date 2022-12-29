@@ -42,6 +42,7 @@ namespace SForm {
 
             this._thumbRadius = 10;
             this._thumbRadiusHoverPressed = 30;
+            this._activeTrack = 4;
         }
 
         private void PlayerBar_onValueChanged(object sender, int newValue) {

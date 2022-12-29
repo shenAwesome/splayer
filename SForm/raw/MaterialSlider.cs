@@ -338,7 +338,7 @@ namespace SForm {
             if (_useAccentColor)
                 _accentColor = SkinManager.ColorScheme.AccentColor;
             else
-                _accentColor = SkinManager.ColorScheme.PrimaryColor;
+                _accentColor = SkinManager.ColorScheme.PrimaryColor; 
 
             _accentBrush = new SolidBrush(_accentColor);
             _disabledBrush = new SolidBrush(Color.FromArgb(255, 158, 158, 158));

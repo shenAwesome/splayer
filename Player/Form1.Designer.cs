@@ -76,6 +76,7 @@ namespace SPlayer {
             this.bodyPanel.Panel1.BackColor = System.Drawing.Color.Black;
             this.bodyPanel.Panel1.Controls.Add(this.subtitleLabel);
             this.bodyPanel.Panel1.Controls.Add(this.videoView1);
+            this.bodyPanel.Panel1.Resize += new System.EventHandler(this.bodyPanel_Panel1_Resize);
             // 
             // bodyPanel.Panel2
             // 
@@ -369,6 +370,7 @@ namespace SPlayer {
             this.Load += new System.EventHandler(this.Form1_Load);
             this.DragDrop += new System.Windows.Forms.DragEventHandler(this.Form1_DragDrop);
             this.DragEnter += new System.Windows.Forms.DragEventHandler(this.Form1_DragEnter);
+            this.Resize += new System.EventHandler(this.Form1_Resize);
             ((System.ComponentModel.ISupportInitialize)(this.videoView1)).EndInit();
             this.bodyPanel.Panel1.ResumeLayout(false);
             this.bodyPanel.Panel1.PerformLayout();

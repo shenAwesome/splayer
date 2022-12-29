@@ -1,12 +1,13 @@
-﻿using LibVLCSharp.Shared;
-using MaterialSkin;
+﻿using MaterialSkin;
 using MaterialSkin.Controls;
 using SForm;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
+
 namespace SPlayer {
     public partial class Form1 : SForm.SForm {
 
@@ -16,21 +17,18 @@ namespace SPlayer {
 
         public Form1() {
             InitializeComponent();
+            ApplyTheme();
 
-            var materialSkinManager = MaterialSkinManager.Instance;
-            materialSkinManager.AddFormToManage(this);
-            materialSkinManager.Theme = MaterialSkinManager.Themes.DARK;
-            materialSkinManager.ColorScheme = new ColorScheme(Primary.BlueGrey500,
-                Primary.BlueGrey900, Primary.BlueGrey100, Accent.DeepOrange700,
-                TextShade.WHITE);
 
             player.Install(videoView1);
 
-            Panel panelDoubleClick = new TransparentPanel();
-            panelDoubleClick.Dock = DockStyle.Fill;
+            Panel panelDoubleClick = new TransparentPanel {
+                Dock = DockStyle.Fill
+            };
+            panelDoubleClick.MouseDoubleClick += PanelDoubleClick_MouseDoubleClick;
             bodyPanel.Panel1.Controls.Add(panelDoubleClick);
             panelDoubleClick.BringToFront();
-            panelDoubleClick.MouseDoubleClick += PanelDoubleClick_MouseDoubleClick;
+            subtitleLabel.BringToFront();
 
             timer.Tick += Timer_Tick;
             timer.Interval = 500;
@@ -38,14 +36,11 @@ namespace SPlayer {
 
             player.OnOpened += (o, i) => Invoke(new MethodInvoker(delegate () {
                 Player_Opened();
-                //panelDoubleClick.Visible = false;
             }));
 
             subtitleBox.SelectedIndexChanged += SubtitleBox_SelectedIndexChanged;
 
             status.Setup(this, RenderStatus);
-
-            Subtitle = null;
         }
 
         private void PanelDoubleClick_MouseDoubleClick(object sender, MouseEventArgs e) {
@@ -54,22 +49,6 @@ namespace SPlayer {
             } else {
                 WindowState = FormWindowState.Maximized;
             }
-        }
-
-        protected override bool IsInputKey(Keys keyData) {
-            switch (keyData) {
-                case Keys.Right:
-                case Keys.Left:
-                case Keys.Up:
-                case Keys.Down:
-                    return true;
-                case Keys.Shift | Keys.Right:
-                case Keys.Shift | Keys.Left:
-                case Keys.Shift | Keys.Up:
-                case Keys.Shift | Keys.Down:
-                    return true;
-            }
-            return base.IsInputKey(keyData);
         }
 
         private void SubtitleBox_SelectedIndexChanged(object sender, MaterialListBoxItem selectedItem) {
@@ -83,7 +62,7 @@ namespace SPlayer {
                 index = Clamp(index, 0, player.Subtitles.Count - 1);
                 var subtitle = player.Subtitles[index];
                 subtitleBox.SelectedIndex = index;
-                Subtitle = subtitle;
+                status.Subtitle = subtitle;
                 player.player.SetPause(true);
                 player.Progress = (long)subtitle.Start.TotalSeconds;
                 System.Threading.Thread.Sleep(200);
@@ -104,11 +83,14 @@ namespace SPlayer {
             Text = player.Name;
             subtitleBox.Items.Clear();
             if (player.HasSubtitles) {
+                var items = new List<MaterialListBoxItem>();
                 foreach (var subtitle in player.Subtitles) {
                     var item = new MaterialListBoxItem(subtitle.Text);
-                    subtitleBox.Items.Add(item);
+                    items.Add(item);
                 }
-                subtitleBox.Items.Add(new MaterialListBoxItem(""));//strange bug
+                items.Add(new MaterialListBoxItem(""));//strange bug
+
+                subtitleBox.AddItems(items.ToArray());
             }
 
             //ResizeToViedo();
@@ -194,9 +176,9 @@ namespace SPlayer {
                     subtitleBox.SelectedIndex = player.Subtitle.Index;
                     if (!subtitleBox.IsHovered) subtitleBox.ScrollToSelection();
 
-                    if (Subtitle != null) {
-                        if (player.Progress > Subtitle.Start.TotalSeconds + 5) {
-                            Subtitle = null;
+                    if (status.Subtitle != null) {
+                        if (player.Progress > status.Subtitle.Start.TotalSeconds + 5) {
+                            status.Subtitle = null;
                         }
                     }
                 }
@@ -209,6 +191,22 @@ namespace SPlayer {
         private void RenderStatus() {
             bodyPanel.Panel2Collapsed = !(status.ShowSubtitle && player.HasSubtitles);
             SelectButton(toggleSubBtn, status.ShowSubtitle);
+
+            var label = subtitleLabel;
+            var subtitle = status.Subtitle;
+            if (subtitle == null) {
+                label.Visible = false;
+            } else {
+                label.MaximumSize = new Size(videoView1.Width - 10, 0);
+                label.AutoSize = true;
+                label.Font = new Font(label.Font.FontFamily, 20);
+                label.Text = subtitle.Text;
+                var loc = label.Location;
+                loc.X = (videoView1.Width - label.Size.Width) / 2;
+                loc.Y = videoView1.Height - label.Size.Height - 2;
+                label.Location = loc;
+                label.Visible = true;
+            }
         }
 
         private void SelectButton(MaterialButton btn, bool select) {
@@ -281,6 +279,9 @@ namespace SPlayer {
             openFileDialog1.Filter = "Video files (*.mp3;*.mp4;*.mkv;*.avi)|*.mp3;*.mp4;*.mkv;*.avi|All files (*.*)|*.*";
             openFileDialog1.FilterIndex = 1;
             openFileDialog1.RestoreDirectory = true;
+            if (player.MediaPath != null) {
+                openFileDialog1.InitialDirectory = MediaFolder;
+            }
             if (openFileDialog1.ShowDialog() == DialogResult.OK) {
                 OpenMedia(openFileDialog1.FileName);
             }
@@ -294,8 +295,8 @@ namespace SPlayer {
             e.IsInputKey = true;
         }
 
-        Keys _lastKey;
-        long _lastKeyTime;
+        private Keys _lastKey;
+        private long _lastKeyTime;
 
         private void playBtn_KeyDown(object sender, KeyEventArgs e) {
             var index = subtitleBox.SelectedIndex;
@@ -362,7 +363,6 @@ namespace SPlayer {
         }
 
         private void openNext(int offset) {
-            var folder = MediaFolder;
             var ext = Path.GetExtension(player.MediaPath);
             string[] filePaths = Directory.GetFiles(MediaFolder, "*" + ext,
                                          SearchOption.TopDirectoryOnly);
@@ -379,36 +379,18 @@ namespace SPlayer {
             openNext(-1);
         }
 
+        private void bodyPanel_Panel1_Resize(object sender, EventArgs e) {
+            this.RenderStatus();
+        }
 
-
-        Line _subtitle;
-
-        public Line Subtitle {
-            get {
-                return _subtitle;
-            }
-            set {
-                _subtitle = value;
-                if (value == null) {
-                    subtitleLabel.Visible = false;
-                } else {
-                    //var text = player.SubtitleText;
-                    subtitleLabel.MaximumSize = new Size(videoView1.Width - 10, 0);
-                    subtitleLabel.AutoSize = true;
-                    subtitleLabel.Font = new Font(subtitleLabel.Font.FontFamily, 20);
-                    subtitleLabel.Text = _subtitle.Text;
-                    var loc = subtitleLabel.Location;
-                    loc.X = (videoView1.Width - subtitleLabel.Size.Width) / 2;
-                    loc.Y = videoView1.Height - subtitleLabel.Size.Height - 2;
-                    subtitleLabel.Location = loc;
-                    subtitleLabel.Visible = true;
-                }
-            }
+        private void Form1_Resize(object sender, EventArgs e) {
+            this.RenderStatus();
         }
     }
 
     class SPlayerStatus : State {
         public bool ShowSubtitle = true;
+        public Line Subtitle = null;
     }
 
 
