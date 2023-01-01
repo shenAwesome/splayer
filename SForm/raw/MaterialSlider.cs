@@ -1,12 +1,8 @@
 ﻿using MaterialSkin;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace SForm {
@@ -51,8 +47,8 @@ namespace SForm {
                     _value = _rangeMax;
                 else
                     _value = value;
-                //_mouseX = _sliderRectangle.X + ((int)((double)_value / (double)(RangeMax - RangeMin) * (double)(_sliderRectangle.Width) - _thumbRadius / 2));
-                _mouseX = _sliderRectangle.X + ((int)((double)_value / (double)(RangeMax - RangeMin) * (double)(_sliderRectangle.Width - _thumbRadius)));
+
+                //_mouseX = _sliderRectangle.X + ((int)((double)_value / (double)(RangeMax - RangeMin) * (double)(_sliderRectangle.Width - _thumbRadius)));
                 RecalcutlateIndicator();
             }
         }
@@ -81,8 +77,7 @@ namespace SForm {
             get { return _rangeMax; }
             set {
                 _rangeMax = value;
-                //_mouseX = _sliderRectangle.X + ((int)((double)_value / (double)(RangeMax - RangeMin) * (double)(_sliderRectangle.Width) - _thumbRadius / 2));
-                _mouseX = _sliderRectangle.X + ((int)((double)_value / (double)(RangeMax - RangeMin) * (double)(_sliderRectangle.Width - _thumbRadius)));
+                //_mouseX = _sliderRectangle.X + ((int)((double)_value / (double)(RangeMax - RangeMin) * (double)(_sliderRectangle.Width - _thumbRadius)));
                 RecalcutlateIndicator();
             }
         }
@@ -95,8 +90,7 @@ namespace SForm {
             get { return _rangeMin; }
             set {
                 _rangeMin = value;
-                //_mouseX = _sliderRectangle.X + ((int)((double)_value / (double)(RangeMax - RangeMin) * (double)(_sliderRectangle.Width) - _thumbRadius / 2));
-                _mouseX = _sliderRectangle.X + ((int)((double)_value / (double)(RangeMax - RangeMin) * (double)(_sliderRectangle.Width - _thumbRadius)));
+                //_mouseX = _sliderRectangle.X + ((int)((double)_value / (double)(RangeMax - RangeMin) * (double)(_sliderRectangle.Width - _thumbRadius)));
                 RecalcutlateIndicator();
             }
         }
@@ -271,9 +265,7 @@ namespace SForm {
                 _mouseX = e.X - _thumbRadius / 2;
                 double ValuePerPx = ((double)(RangeMax - RangeMin)) / (_sliderRectangle.Width - _thumbRadius);
                 v = (int)(ValuePerPx * (_mouseX - _sliderRectangle.X));
-                //if (_valueMax!=0 && v > _valueMax) v = _valueMax;
-            } else if (e.X < _sliderRectangle.X)// + (_thumbRadius / 2))
-              {
+            } else if (e.X < _sliderRectangle.X) {
                 _mouseX = _sliderRectangle.X;
                 v = _rangeMin;
             } else if (e.X > _sliderRectangle.Right - _thumbRadius)// / 2)
@@ -293,6 +285,14 @@ namespace SForm {
             }
         }
 
+        private void updateMouseX() {
+            //_mouseX = (int)(_sliderRectangle.X + ((double)_value / (double)(_rangeMax - _rangeMin) * (double)(_sliderRectangle.Width) - (double)_thumbRadius / 2));
+            double x = _sliderRectangle.X
+                   + (double)_value / (_rangeMax - _rangeMin) * _sliderRectangle.Width
+                   - (double)_thumbRadius / 2;
+            _mouseX = (int)x;
+        }
+
         private void UpdateRects() {
             Size textSize;
             Size valueSize;
@@ -300,16 +300,17 @@ namespace SForm {
                 textSize = NativeText.MeasureLogString(_showText ? Text : "", SkinManager.getLogFontByType(_fontType));
                 valueSize = NativeText.MeasureLogString(_showValue ? RangeMax.ToString() + _valueSuffix : "", SkinManager.getLogFontByType(_fontType));
             }
-            //_valueRectangle = new Rectangle(Width - valueSize.Width - _thumbRadiusHoverPressed / 4, 0, valueSize.Width + _thumbRadiusHoverPressed / 4, Height);
-            //_textRectangle = new Rectangle(0, 0, textSize.Width + _thumbRadiusHoverPressed / 4, Height);
             _valueRectangle = new Rectangle(Width - valueSize.Width - _thumbRadiusHoverPressed / 2, 0, valueSize.Width + _thumbRadiusHoverPressed / 2, Height);
             _textRectangle = new Rectangle(0, 0, textSize.Width + _thumbRadiusHoverPressed / 2, Height);
             _sliderRectangle = new Rectangle(_textRectangle.Right, 0, _valueRectangle.Left - _textRectangle.Right, _thumbRadius);
-            _mouseX = _sliderRectangle.X + ((int)((double)_value / (double)(_rangeMax - _rangeMin) * (double)(_sliderRectangle.Width) - _thumbRadius / 2));
+
+
             RecalcutlateIndicator();
         }
 
         private void RecalcutlateIndicator() {
+            updateMouseX();
+
             _indicatorRectangle = new Rectangle(_mouseX, (Height - _thumbRadius) / 2, _thumbRadius, _thumbRadius);
             _indicatorRectangleNormal = new Rectangle(_indicatorRectangle.X, Height / 2 - _thumbRadius / 2, _thumbRadius, _thumbRadius);
             _indicatorRectanglePressed = new Rectangle(_indicatorRectangle.X + _thumbRadius / 2 - _thumbRadiusHoverPressed / 2, Height / 2 - _thumbRadiusHoverPressed / 2, _thumbRadiusHoverPressed, _thumbRadiusHoverPressed);
@@ -338,7 +339,7 @@ namespace SForm {
             if (_useAccentColor)
                 _accentColor = SkinManager.ColorScheme.AccentColor;
             else
-                _accentColor = SkinManager.ColorScheme.PrimaryColor; 
+                _accentColor = SkinManager.ColorScheme.PrimaryColor;
 
             _accentBrush = new SolidBrush(_accentColor);
             _disabledBrush = new SolidBrush(Color.FromArgb(255, 158, 158, 158));

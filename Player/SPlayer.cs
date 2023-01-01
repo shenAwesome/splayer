@@ -38,7 +38,7 @@ namespace SPlayer {
         /** isplaying with 1.5 sec delay**/
         public bool IsPlaying {
             get {
-                return this.player.IsPlaying && (now - _playingStart) > 1500;
+                return player.IsPlaying && (now - _playingStart) > 1500;
             }
         }
 
@@ -57,37 +57,39 @@ namespace SPlayer {
         //only trigger by open (when media changes)
         long _playingStart = 0;
         private void Player_Playing(object sender, EventArgs e) {
-            _playingStart = now;
-            if (_runningMedia == MediaPath) return;
-
-            _runningMedia = MediaPath;
-            var media = player.Media;
-            foreach (var track in media.Tracks) {
-                switch (track.TrackType) {
-                    case TrackType.Audio:
-                        Debug.WriteLine("Audio track");
-                        Debug.WriteLine($"{nameof(track.Data.Audio.Channels)}: {track.Data.Audio.Channels}");
-                        Debug.WriteLine($"{nameof(track.Data.Audio.Rate)}: {track.Data.Audio.Rate}");
-                        break;
-                    case TrackType.Video:
-                        Debug.WriteLine("Video track");
-                        Debug.WriteLine($"{nameof(track.Data.Video.FrameRateNum)}: {track.Data.Video.FrameRateNum}");
-                        Debug.WriteLine($"{nameof(track.Data.Video.FrameRateDen)}: {track.Data.Video.FrameRateDen}");
-                        Debug.WriteLine($"{nameof(track.Data.Video.Height)}: {track.Data.Video.Height}");
-                        Debug.WriteLine($"{nameof(track.Data.Video.Width)}: {track.Data.Video.Width}");
-                        VideoWidth = Convert.ToInt32(track.Data.Video.Width);
-                        VideoHeight = Convert.ToInt32(track.Data.Video.Height);
-                        break;
-                    case TrackType.Text:
-                        //Debug.WriteLine("Subtitle");
-                        //Debug.WriteLine(track.Data.Subtitle.Encoding);
-                        break;
-                }
-            }
             player.SetSpu(-1);
-            player.Volume = 100;
-            Duration = media.Duration / 1000;
-            OnOpened?.Invoke(this, null);
+            if (_runningMedia != MediaPath) {
+                OnOpened?.Invoke(this, null);
+                player.Volume = 100;
+                Duration = player.Media.Duration / 1000;
+
+                var media = player.Media;
+                foreach (var track in media.Tracks) {
+                    switch (track.TrackType) {
+                        case TrackType.Audio:
+                            Debug.WriteLine("Audio track");
+                            Debug.WriteLine($"{nameof(track.Data.Audio.Channels)}: {track.Data.Audio.Channels}");
+                            Debug.WriteLine($"{nameof(track.Data.Audio.Rate)}: {track.Data.Audio.Rate}");
+                            break;
+                        case TrackType.Video:
+                            Debug.WriteLine("Video track");
+                            Debug.WriteLine($"{nameof(track.Data.Video.FrameRateNum)}: {track.Data.Video.FrameRateNum}");
+                            Debug.WriteLine($"{nameof(track.Data.Video.FrameRateDen)}: {track.Data.Video.FrameRateDen}");
+                            Debug.WriteLine($"{nameof(track.Data.Video.Height)}: {track.Data.Video.Height}");
+                            Debug.WriteLine($"{nameof(track.Data.Video.Width)}: {track.Data.Video.Width}");
+                            VideoWidth = Convert.ToInt32(track.Data.Video.Width);
+                            VideoHeight = Convert.ToInt32(track.Data.Video.Height);
+                            break;
+                        case TrackType.Text:
+                            //Debug.WriteLine("Subtitle");
+                            //Debug.WriteLine(track.Data.Subtitle.Encoding);
+                            break;
+                    }
+                }
+
+            }
+            _runningMedia = MediaPath;
+            _playingStart = now;
         }
 
         private void Player_EndReached(object sender, EventArgs e) {
