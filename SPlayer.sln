@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.33130.400
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33205.214
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SPlayer", "Player\SPlayer.csproj", "{20238C0B-020F-4BAD-AEDC-8861A8BF8C1B}"
 EndProject
@@ -10,6 +10,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SForm", "SForm\SForm.csproj", "{BD9343C1-2502-44CE-AA21-C98D2DD6000F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SDownloader", "SDownloader\SDownloader.csproj", "{F50C82B8-48AF-4794-AACF-16927392CF2F}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Setup1", "Setup1\Setup1.vdproj", "{89BFFFE4-D447-4457-8E54-79BCE40FFA97}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,8 @@ Global
 		{F50C82B8-48AF-4794-AACF-16927392CF2F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F50C82B8-48AF-4794-AACF-16927392CF2F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F50C82B8-48AF-4794-AACF-16927392CF2F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{89BFFFE4-D447-4457-8E54-79BCE40FFA97}.Debug|Any CPU.ActiveCfg = Debug
+		{89BFFFE4-D447-4457-8E54-79BCE40FFA97}.Release|Any CPU.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

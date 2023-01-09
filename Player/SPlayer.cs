@@ -105,7 +105,10 @@ namespace SPlayer {
             }
 
             set {
+                var isPlaying = player.IsPlaying;
+                if (isPlaying) player.SetPause(true);
                 player.Time = value * 1000;
+                if (isPlaying) player.SetPause(false);
             }
         }
 

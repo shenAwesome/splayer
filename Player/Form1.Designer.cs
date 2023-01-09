@@ -59,7 +59,7 @@ namespace SPlayer {
             this.videoView1.Location = new System.Drawing.Point(0, 0);
             this.videoView1.MediaPlayer = null;
             this.videoView1.Name = "videoView1";
-            this.videoView1.Size = new System.Drawing.Size(413, 419);
+            this.videoView1.Size = new System.Drawing.Size(410, 422);
             this.videoView1.TabIndex = 0;
             this.videoView1.Text = "videoView1";
             // 
@@ -81,8 +81,8 @@ namespace SPlayer {
             // bodyPanel.Panel2
             // 
             this.bodyPanel.Panel2.Controls.Add(this.subtitleBox);
-            this.bodyPanel.Size = new System.Drawing.Size(603, 419);
-            this.bodyPanel.SplitterDistance = 413;
+            this.bodyPanel.Size = new System.Drawing.Size(599, 422);
+            this.bodyPanel.SplitterDistance = 410;
             this.bodyPanel.TabIndex = 1;
             // 
             // subtitleLabel
@@ -110,7 +110,7 @@ namespace SPlayer {
             this.subtitleBox.SelectedIndex = -1;
             this.subtitleBox.SelectedItem = null;
             this.subtitleBox.ShowBorder = false;
-            this.subtitleBox.Size = new System.Drawing.Size(186, 419);
+            this.subtitleBox.Size = new System.Drawing.Size(185, 422);
             this.subtitleBox.TabIndex = 0;
             // 
             // imageList1
@@ -147,11 +147,11 @@ namespace SPlayer {
             this.footerPanel.Controls.Add(this.toggleSubBtn, 7, 0);
             this.footerPanel.Controls.Add(this.menuBtn, 8, 0);
             this.footerPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.footerPanel.Location = new System.Drawing.Point(3, 443);
+            this.footerPanel.Location = new System.Drawing.Point(3, 446);
             this.footerPanel.Name = "footerPanel";
             this.footerPanel.RowCount = 1;
             this.footerPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.footerPanel.Size = new System.Drawing.Size(603, 43);
+            this.footerPanel.Size = new System.Drawing.Size(599, 43);
             this.footerPanel.TabIndex = 1;
             // 
             // playBtn
@@ -275,7 +275,7 @@ namespace SPlayer {
             this.playerBar.RangeMax = 10000;
             this.playerBar.ShowText = false;
             this.playerBar.ShowValue = false;
-            this.playerBar.Size = new System.Drawing.Size(265, 41);
+            this.playerBar.Size = new System.Drawing.Size(261, 41);
             this.playerBar.TabIndex = 10;
             this.playerBar.Text = "";
             this.playerBar.Value = 0;
@@ -292,7 +292,7 @@ namespace SPlayer {
             this.repeatBtn.ForeColor = System.Drawing.SystemColors.AppWorkspace;
             this.repeatBtn.HighEmphasis = true;
             this.repeatBtn.Icon = global::SPlayer.Properties.Resources.replay_line;
-            this.repeatBtn.Location = new System.Drawing.Point(477, 0);
+            this.repeatBtn.Location = new System.Drawing.Point(473, 0);
             this.repeatBtn.Margin = new System.Windows.Forms.Padding(0);
             this.repeatBtn.MouseState = MaterialSkin.MouseState.HOVER;
             this.repeatBtn.Name = "repeatBtn";
@@ -313,7 +313,7 @@ namespace SPlayer {
             this.toggleSubBtn.Dock = System.Windows.Forms.DockStyle.Fill;
             this.toggleSubBtn.HighEmphasis = true;
             this.toggleSubBtn.Icon = global::SPlayer.Properties.Resources.subtitles;
-            this.toggleSubBtn.Location = new System.Drawing.Point(519, 0);
+            this.toggleSubBtn.Location = new System.Drawing.Point(515, 0);
             this.toggleSubBtn.Margin = new System.Windows.Forms.Padding(0);
             this.toggleSubBtn.MouseState = MaterialSkin.MouseState.HOVER;
             this.toggleSubBtn.Name = "toggleSubBtn";
@@ -333,8 +333,8 @@ namespace SPlayer {
             this.menuBtn.Depth = 0;
             this.menuBtn.Dock = System.Windows.Forms.DockStyle.Fill;
             this.menuBtn.HighEmphasis = true;
-            this.menuBtn.Icon = global::SPlayer.Properties.Resources.configure;
-            this.menuBtn.Location = new System.Drawing.Point(561, 0);
+            this.menuBtn.Icon = global::SPlayer.Properties.Resources.download;
+            this.menuBtn.Location = new System.Drawing.Point(557, 0);
             this.menuBtn.Margin = new System.Windows.Forms.Padding(0);
             this.menuBtn.MouseState = MaterialSkin.MouseState.HOVER;
             this.menuBtn.Name = "menuBtn";
@@ -345,6 +345,7 @@ namespace SPlayer {
             this.menuBtn.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Text;
             this.menuBtn.UseAccentColor = false;
             this.menuBtn.UseVisualStyleBackColor = true;
+            this.menuBtn.Click += new System.EventHandler(this.menuBtn_Click);
             // 
             // openFileDialog1
             // 
@@ -356,7 +357,7 @@ namespace SPlayer {
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.DarkGray;
-            this.ClientSize = new System.Drawing.Size(609, 489);
+            this.ClientSize = new System.Drawing.Size(605, 492);
             this.Controls.Add(this.bodyPanel);
             this.Controls.Add(this.footerPanel);
             this.DrawerShowIconsWhenHidden = true;

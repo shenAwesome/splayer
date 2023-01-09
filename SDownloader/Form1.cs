@@ -7,6 +7,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Net.Http;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Web;
 using System.Windows.Forms;
 
@@ -19,9 +20,27 @@ namespace SDownloader {
 
         private HttpClient httpClient = new HttpClient();
 
+        public void Run(Action action) {
+            new System.Threading.Thread(new System.Threading.ThreadStart(action)).Start();
+        }
+
+        public void RunUI(Action action) {
+            Invoke(new MethodInvoker(action));
+        }
+
         private void Form1_Load(object sender, EventArgs e) {
+            targetBox.Text = "";
             var text = Clipboard.GetText();
-            targetBox.Text = Directory.Exists(text) ? text : "";
+
+            if (File.Exists(text)) text = Path.GetDirectoryName(text);
+            if (Directory.Exists(text)) {
+                Run(() => {
+                    Thread.Sleep(200);
+                    RunUI(() => {
+                        targetBox.Text = text;
+                    });
+                });
+            }
             //var episodes = ExtractEpisodes("tt2575988", 1);
             //Debug.WriteLine(episodes.Count); 
             //DownloadSubtitle("3222784");
@@ -138,8 +157,6 @@ namespace SDownloader {
                 button2.Enabled = false;
                 return;
             }
-            button1.Enabled = true;
-            button2.Enabled = true;
             //auto guess imdbID  
             var folderName = new DirectoryInfo(targetBox.Text).Name;
             var query = HttpUtility.UrlEncode(Regex.Replace(folderName, @".S\d+$", ""));
@@ -162,6 +179,8 @@ namespace SDownloader {
                 seasonBox.Text = season + "";
                 SearchEpisodes(null, null);
             }
+            button1.Enabled = true;
+            button2.Enabled = true;
         }
 
         private string[] Split(string str, string splitter) {

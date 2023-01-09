@@ -24,9 +24,7 @@ namespace SPlayer {
 
             _player.Install(videoView1);
 
-            Panel panelDoubleClick = new TransparentPanel {
-                Dock = DockStyle.Fill
-            };
+            Panel panelDoubleClick = new TransparentPanel { Dock = DockStyle.Fill };
             panelDoubleClick.MouseDoubleClick += PanelDoubleClick_MouseDoubleClick;
             bodyPanel.Panel1.Controls.Add(panelDoubleClick);
             panelDoubleClick.BringToFront();
@@ -58,9 +56,13 @@ namespace SPlayer {
         }
 
         public void OpenMedia(string path) {
+            OpenMedia(path, 0);
+        }
+        public void OpenMedia(string path, long progress) {
             if (File.Exists(path)) {
                 playerBar.Duration = 0;
-                _player.Open(path);
+                Run(() => _player.Open(path, progress));
+                RunUI(() => Clipboard.SetText(path));
             }
         }
 
@@ -125,9 +127,9 @@ namespace SPlayer {
 
             if (Location.X == 0 && Location.Y == 0) Center();
 
-            //auto load video
-            var MediaPath = Settings.MediaPath;
-            _player.Open(MediaPath, Settings.MediaProgress);
+            //auto load video  
+            OpenMedia(Settings.MediaPath, Settings.MediaProgress);
+
         }
 
         private void Form1_Resize(object sender, EventArgs e) {
@@ -173,8 +175,7 @@ namespace SPlayer {
 
         private void playBtn_Click(object sender, EventArgs e) {
             if (_player.IsLoaded) {
-                _player.player.Pause();
-                System.Threading.Thread.Sleep(500);
+                Run(() => _player.player.Pause());
             }
         }
 
@@ -190,7 +191,6 @@ namespace SPlayer {
 
                 case Keys.Down:
                     _state.ShowSubtitlePanel = !_state.ShowSubtitlePanel;
-                    //ullScreen.EnterFullScreenMode(this);
                     break;
 
                 case Keys.Left:
@@ -230,11 +230,7 @@ namespace SPlayer {
 
         private void playerBar_onValueChanged(object sender, int newValue) {
             if (playerBar.Duration == 0) return;
-            var isPlaying = _player.player.IsPlaying;
-            var progress = playerBar.Progress;
-            if (isPlaying) _player.player.SetPause(true);
-            _player.Progress = progress;
-            if (isPlaying) _player.player.SetPause(false);
+            _player.Progress = playerBar.Progress;
         }
 
         private void prevBtn_Click(object sender, EventArgs e) {
@@ -353,15 +349,27 @@ namespace SPlayer {
 
         private void ToSubtitle(int index) {
             if (!_player.HasSubtitles) return;
-
             index = Clamp(index, 0, _player.Subtitles.Count - 1);
             var subtitle = _player.Subtitles[index];
             subtitleBox.SelectedIndex = index;
             _state.Subtitle = subtitle;
-            _player.player.SetPause(true);
             _player.Progress = (long)subtitle.Start.TotalSeconds;
-            System.Threading.Thread.Sleep(200);
-            _player.player.SetPause(false);
+        }
+
+        public void Run(Action action) {
+            new System.Threading.Thread(new System.Threading.ThreadStart(action)).Start();
+        }
+
+        public void RunUI(Action action) {
+            Invoke(new MethodInvoker(action));
+        }
+
+        private void menuBtn_Click(object sender, EventArgs e) {
+            var home = System.IO.Path.GetDirectoryName(Application.ExecutablePath);
+            var downloaderPath = Path.Combine(home, "SDownloader.exe");
+            if (File.Exists(downloaderPath)) {
+                Process.Start(downloaderPath);
+            }
         }
     }
 
