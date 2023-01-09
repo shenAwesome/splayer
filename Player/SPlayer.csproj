@@ -235,6 +235,7 @@
     <Error Condition="!Exists('packages\VideoLAN.LibVLC.Windows.3.0.18\build\VideoLAN.LibVLC.Windows.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\VideoLAN.LibVLC.Windows.3.0.18\build\VideoLAN.LibVLC.Windows.targets'))" />
   </Target>
   <PropertyGroup>
-    <PostBuildEvent>copy /Y "$(TargetDir)$(ProjectName).exe" "D:\software\SPlayer\SPlayer.exe"</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
 </Project>
